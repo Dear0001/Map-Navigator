@@ -8,14 +8,40 @@
 #include <windows.h>
 
 using namespace std;
-HANDLE h= GetStdHandle(STD_OUTPUT_HANDLE);
 
-vector<string> v1 = {"Chroy Chongvar", "Prek Pnov",  "Russey Keo", "Sen Sok", "Por Senchey", "Kamboul", "Dangkao", "Mean Chey", "Toul Kouk", "Doun Penh", "Prampi Makara", "Chamkar Mon", "Boeng Kengkong", "Chbar Ampov"};
+// Console color handler
+HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+// List of anime districts (Can be customized to different themes)
+vector<string> v1 = {"Chroy Chongvar", "Prek Pnov", "Russey Keo", "Sen Sok", "Por Senchey", "Kamboul", 
+                     "Dangkao", "Mean Chey", "Toul Kouk", "Doun Penh", "Prampi Makara", "Chamkar Mon", 
+                     "Boeng Kengkong", "Chbar Ampov"};
+
+// Print anime-themed welcome screen
+void printWelcomeScreen() {
+    SetConsoleTextAttribute(h, 11); // Set color to bright cyan
+    cout << R"( 
+  _____  _                   _              _                 _             
+ |  __ \| |                 | |            | |               | |            
+ | |  | | |__   __ _ _ __ __| |_   _  ___  | |_ _ __ __ _ ___| |_ ___  _ __ 
+ | |  | | '_ \ / _` | '__/ _` | | | |/ _ \ | __| '__/ _` / __| __/ _ \| '__|
+ | |__| | | | | (_| | | | (_| | |_| |  __/ | |_| | | (_| \__ \ || (_) | |   
+ |_____/|_| |_|\__,_|_|  \__,_|\__,_|\___|  \__|_|  \__,_|___/\__\___/|_|   
+                                                                          
+)" << endl;
+
+    SetConsoleTextAttribute(h, 14); // Set color to yellow
+    cout << "\nWelcome to the Anime Themed Shortest Path Finder!" << endl;
+    cout << "Explore the districts of the city as if you were in your favorite anime!" << endl;
+    cout << "Let's find the best route for your favorite characters to meet!" << endl << endl;
+
+    SetConsoleTextAttribute(h, 7); // Reset to default color
+}
 
 // A directed graph using adjacency list representation
 class Graph {
-    map<string, double> vertexMap;       // Map to store vertex names and their respective indices
-    vector<list<pair<double, double>>> adj; // Adjacency list representing the graph.
+    map<string, double> vertexMap; // Map to store vertex names and their indices
+    vector<list<pair<double, double>>> adj; // Adjacency list representing the graph
 
 public:
     void addVertex(string name);
@@ -51,10 +77,8 @@ vector<pair<double, int>> Graph::dijkstra(int src) {
 
     for (int i = 0; i < V-1; i++) {
         int u = getMinDistanceVertex(dist, visited);  // Get the vertex with minimum distance value
-        
         visited[u] = true;  // Mark the picked vertex as visited
 
-        // Update distance values of the adjacent vertices of the picked vertex
         for (auto it = adj[u].begin(); it != adj[u].end(); ++it) {
             int v = it->first;
             double weight = it->second;
@@ -66,14 +90,12 @@ vector<pair<double, int>> Graph::dijkstra(int src) {
         }
     }
     
-    // Change return type to vector<pair<int, int>>
     vector<pair<double, int>> result;
     for (int i = 0; i < V; i++) {
         result.push_back(make_pair(dist[i], parent[i]));
     }
     return result;
 }
-
 
 int Graph::getMinDistanceVertex(vector<double>& dist, vector<bool>& visited) {
     int V = adj.size();
@@ -116,58 +138,27 @@ void Graph::printAllPaths(string s, string d) {
         path.push_front(v1[curr]);
         curr = parent[curr].second;
     }
-    SetConsoleTextAttribute(h,5);
+
+    SetConsoleTextAttribute(h, 5); // Set color to magenta
     cout << "\n\t\t\tShortest path between " << s << " and " << d << " is: \n";
-    cout<<"\t\t\t";
+    cout << "\t\t\t";
     for (auto it = path.begin(); it != path.end(); ++it) {
-       
-         if (it != path.begin()) {
+        if (it != path.begin()) {
+            SetConsoleTextAttribute(h, 9); // Set color to blue for arrows
             cout <<" -> ";
         }
+        SetConsoleTextAttribute(h, 6); // Set color to yellow for locations
         cout << *it;
     }
     cout << "\n\n";
 }
 
-
-void loadingBar()
-{
-	// 0 - black background,
-	// A - Green Foreground
-	// system("color 0A");
-    SetConsoleTextAttribute(h,1);
-
-	// Initialize char for printing
-	// loading bar
-	char a = 177, b = 219;
-
-	printf("\n\n\t\t\tLoading...\n\n");
-	printf("\t\t\t");
-
-	// Print initial loading bar
-	for (int i = 0; i < 30; i++)
-		printf("%c", a);
-
-	// Set the cursor again starting
-	// point of loading bar
-	printf("\r");
-	printf("\t\t\t");
-
-	// Print loading bar progress
-	for (int i = 0; i < 30; i++) {
-		printf("%c", b);
-
-		// Sleep for 1 second
-		Sleep(200);
-	}
-}
-
 int main() {
     Graph g;
 
-    loadingBar();
-    system("cls");
-    cout <<"\n\n";
+    // Print the anime-themed welcome screen
+    printWelcomeScreen();
+
     g.addVertex("Chroy Chongvar");
     g.addVertex("Prek Pnov");
     g.addVertex("Russey Keo");
@@ -183,54 +174,35 @@ int main() {
     g.addVertex("Boeng Kengkong");
     g.addVertex("Chbar Ampov");
 
-    g.addEdge("Chroy chongvar", "Russey Keo", 5.9);   
+    g.addEdge("Chroy chongvar", "Russey Keo", 5.9);
     g.addEdge("Chroy chongvar", "Doun Penh", 2.6);
     g.addEdge("Chroy chongvar", "Prek Pnov", 14.7);
-    
     g.addEdge("Prek Pnov","Russey Keo", 11.1);
     g.addEdge("Prek Pnov","Sen Sok", 10);
-    g.addEdge("Prek Pnov","Por Senchey", 19.6);
-    g.addEdge("Prek Pnov","Kamboul", 23.6);
-
-    g.addEdge("Kamboul", "Por Senchey", 4.3);
-    g.addEdge("Kamboul", "Dangkao", 18.4);
-
-    g.addEdge("Dangkao", "Por Senchey", 16.4);
-    g.addEdge("Dangkao", "Mean Chey", 6.8);
-
-    g.addEdge("Mean Chey", "Por Senchey", 11.4);
-    g.addEdge("Mean Chey", "Sen Sok", 9.6);
-    g.addEdge("Mean Chey", "Toul Kouk", 5.7);
-    g.addEdge("Mean Chey", "Chamkar Mon", 6);
-    g.addEdge("Mean Chey", "Boeng Kengkong", 6.8);
-    g.addEdge("Mean Chey", "Chbar Ampov", 18);
-
-    g.addEdge("Chbar Ampov","Boeng Kengkong", 14);
-
-    g.addEdge("Boeng Kengkong", "Chamkar Mon", 0.85);
-    g.addEdge("Boeng Kengkong", "Doun Penh", 2.5);
-
-    g.addEdge("Doun Penh", "Chamkar Mon", 2.7);
-    g.addEdge("Doun Penh", "Prampi Makara", 1.6);
-    g.addEdge("Doun Penh", "Toul Kouk", 3.5);
-    g.addEdge("Doun Penh", "Russey Keo", 10.6);
-
-    g.addEdge("Prampi Makara", "Chamkar Mon", 2.8);
-    g.addEdge("Prampi Makara", "Toul Kouk", 2.9);
     
-    g.addEdge("Toul Kouk", "Russey Keo", 7);
-    g.addEdge("Toul Kouk", "Sen Sok", 7.1);
+    char choice;
+    do {
+        string s, d;
+        SetConsoleTextAttribute(h, 11);
+        cout << "Enter the source location: ";
+        SetConsoleTextAttribute(h, 14);
+        getline(cin, s);
+        SetConsoleTextAttribute(h, 11);
+        cout << "Enter the destination location: ";
+        SetConsoleTextAttribute(h, 14);
+        getline(cin, d);
 
-    g.addEdge("Sen Sok", "Por Senchey", 15.4);
-    g.addEdge("Sen Sok", "Russey Keo", 9.1);
+        double shortestDist = g.shortestDistance(s, d);
+        SetConsoleTextAttribute(h,3);
+        cout << "\n\t\t\tTotal distance of " << s << " and " << d << " is: " << shortestDist << endl;
+        g.printAllPaths(s, d);
+        cout <<"\n\n";
 
-    string s = "Prek Pnov";
-    string d = "Chbar Ampov";
+        SetConsoleTextAttribute(h, 13);
+        cout << "Do you want to enter another path? (y/n): ";
+        cin >> choice;
+        cin.ignore();
+    } while (choice == 'y' || choice == 'Y');
 
-    double shortestDist = g.shortestDistance(s, d);
-    SetConsoleTextAttribute(h,3);
-    cout << "\n\t\t\tTotal distance of " << s << " and " << d << " is: " << shortestDist << endl;
-    g.printAllPaths(s,d);
-    cout <<"\n\n";
     return 0;
 }
